@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Livanur & Doğukan</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Montserrat:wght@300;400;600&family=Playfair+Display:ital@1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+	
+    <style>
+        /* --- 1. TEMEL AYARLAR VE RENK PALETİ --- */
+        :root {
+            --bg-color: #101010; /* Derin Siyah */
+            --primary-gradient: linear-gradient(135deg, #722F37, #1034A6); /* Şarap Kırmızısı - Saks Mavisi */
+            --text-color: #F8F8FF; /* Krem/Beyaz */
+            --accent-pink: #d81b60;
+            --accent-blue: #1034A6;
+            --accent-red: #722F37;
+            --glass: rgba(255, 255, 255, 0.05);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        h1, h2, h3 { font-family: 'Dancing Script', cursive; }
+
+        /* --- 2. GİRİŞ EKRANI --- */
+        #login-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url('assets/giris_bg.jpg');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .login-box {
+            background: rgba(16, 16, 16, 0.85);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 20px;
+            border: 1px solid rgba(114, 47, 55, 0.5);
+            text-align: center;
+            width: 85%;
+            max-width: 350px;
+            box-shadow: 0 0 30px rgba(16, 52, 166, 0.3);
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 30px;
+            border: none;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        .btn-grad {
+            background-image: var(--primary-gradient);
+            padding: 12px 30px;
+            text-align: center;
+            text-transform: uppercase;
+            transition: 0.5s;
+            background-size: 200% auto;
+            color: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.4);
+            border-radius: 30px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            width: 100%;
+        }
+
+        .btn-grad:hover { background-position: right center; }
+
+        /* --- 3. ANA SAYFA YAPISI --- */
+        #main-content { display: none; padding-bottom: 80px; }
+
+        .section {
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* Hero & Sayaç */
+        .hero {
+            height: 60vh;
+            background: radial-gradient(circle at center, #2a1b2e 0%, #101010 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            text-align: center; /* Metni ortala */
+        }
+
+        /* Yeni başlık stili */
+        .hero-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 300;
+            letter-spacing: 2px;
+            font-size: 1rem;
+            color: #ccc;
+            margin-bottom: 0px;
+        }
+        
+        /* İsimler için özel stil */
+        .hero-names {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3rem;
+            color: var(--accent-pink);
+            margin-top: 5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+
+        .counter-wrapper {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .time-box {
+            background: var(--glass);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 10px;
+            border-radius: 10px;
+            min-width: 60px;
+        }
+        .time-box span { font-size: 1.5rem; font-weight: bold; color: #d81b60; display: block;}
+        .time-box label { font-size: 0.7rem; color: #ccc; }
+
+        /* Müzik Player */
+        .music-player {
+            margin-top: 20px;
+            background: rgba(255,255,255,0.05);
+            padding: 10px 20px;
+            border-radius: 50px;
+            border: 1px solid var(--accent-blue);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem; /* Font boyutu biraz büyütüldü */
+            color: var(--accent-pink); /* Metin rengi pembe yapıldı */
+            border-color: var(--accent-pink); /* Kenarlık rengi pembe yapıldı */
+            cursor: pointer;
+        }
+        
+        /* Günün Sözü */
+        .daily-quote {
+            margin: -30px 20px 20px 20px;
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 15px;
+            border-left: 4px solid var(--accent-red);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            position: relative;
+            z-index: 2;
+        }
+
+        /* --- 4. MEKTUPLAR (BUTONLAR) --- */
+        .letters-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            padding: 0 20px;
+        }
+        .letter-btn {
+            background: #1e1e1e;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .letter-btn:active { transform: scale(0.95); }
+        .letter-btn i { font-size: 2rem; margin-bottom: 10px; color: var(--accent-blue); }
+        .letter-btn.urgent i { color: var(--accent-red); }
+
+        /* --- 5. OYUN ALANI --- */
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        .card {
+            height: 70px;
+            background: #222;
+            border-radius: 5px;
+            cursor: pointer;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.5s;
+        }
+        .card.flipped { transform: rotateY(180deg); }
+        .card-front, .card-back {
+            position: absolute; width: 100%; height: 100%;
+            backface-visibility: hidden;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 5px;
+        }
+        .card-front { background: var(--primary-gradient); color: white; font-size: 1.5rem; }
+        .card-back { background: white; transform: rotateY(180deg); }
+        .card-back img { width: 100%; height: 100%; object-fit: cover; border-radius: 5px; }
+
+        /* --- 6. HARİTA (ZAMAN ÇİZELGESİ) --- */
+        .timeline {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .timeline::after {
+            content: '';
+            position: absolute;
+            width: 4px;
+            background-color: var(--accent-blue);
+            top: 0; bottom: 0; left: 30px;
+            margin-left: -3px;
+        }
+        .timeline-item {
+            padding: 10px 10px 10px 50px;
+            position: relative;
+            background: inherit;
+            width: 100%;
+        }
+        .timeline-item::after {
+            content: '✈️';
+            position: absolute;
+            left: 14px; top: 15px;
+            width: 25px; height: 25px;
+            right: auto;
+            background-color: #101010;
+            border: 2px solid var(--accent-pink);
+            border-radius: 50%;
+            z-index: 1;
+            font-size: 12px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .timeline-content {
+            padding: 15px;
+            background: #1e1e1e;
+            border-radius: 10px;
+            border-bottom: 3px solid var(--accent-red);
+        }
+
+        /* --- 7. ÇARKIFELEK --- */
+        .wheel-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 0 auto;
+            overflow: hidden;
+            border-radius: 50%;
+            border: 5px solid #fff;
+            box-shadow: 0 0 20px rgba(255,255,255,0.2);
+        }
+        .wheel {
+            width: 100%;
+            height: 100%;
+            background: conic-gradient(
+                #722F37 0deg 40deg, #1034A6 40deg 80deg, 
+                #722F37 80deg 120deg, #1034A6 120deg 160deg,
+                #722F37 160deg 200deg, #1034A6 200deg 240deg,
+                #722F37 240deg 280deg, #1034A6 280deg 320deg,
+                #222 320deg 360deg
+            );
+            border-radius: 50%;
+            transition: transform 4s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+        }
+        .spin-btn {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px; height: 60px;
+            background: white;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold;
+            color: #333;
+            cursor: pointer;
+            z-index: 10;
+            box-shadow: 0 0 10px black;
+        }
+        .arrow {
+            position: absolute;
+            top: -10px; left: 50%;
+            transform: translateX(-50%);
+            width: 0; height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 20px solid white;
+            z-index: 11;
+        }
+        .wheel-result {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            color: var(--accent-pink);
+            font-weight: bold;
+            min-height: 30px;
+        }
+
+        /* Modals & Helpers */
+        .hidden { display: none; }
+        .error { color: #ff5252; margin-top: 10px; font-weight: bold; display: none; }
+        .modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: none; align-items: center; justify-content: center; z-index: 2000;
+        }
+        .modal-content {
+            background: #222; padding: 30px; border-radius: 20px;
+            text-align: center; max-width: 80%;
+            border: 2px solid var(--accent-pink);
+        }
+        .coupon {
+            border: 2px dashed #fff; padding: 15px; margin: 20px 0;
+            font-family: monospace; color: var(--accent-pink); font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="bgMusic" loop>
+        <source src="assets/sarki.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="login-screen">
+        <div class="login-box">
+            <h2 style="color: var(--accent-pink); font-size:2rem;">Livanur & Doğukan</h2>
+            <p style="color:#ddd;">Yıl dönümü tarihimiz?</p>
+            <input type="text" id="passInput" placeholder="GG.AA.YYYY">
+            <button class="btn-grad" onclick="checkPassword()">Giriş Yap</button>
+            <p class="error" id="errorMsg">Sen benim sevgilim değil misin lan it? 🤬</p>
+        </div>
+    </div>
+
+    <div id="main-content">
+        
+        <div class="hero">
+            <div class="hero-title">BİZİM HİKAYEMİZ</div>
+            <div class="hero-names">Doğukan & Livanur</div>
+
+            <div class="counter-wrapper">
+                <div class="time-box"><span id="days">0</span><label>Gün</label></div>
+                <div class="time-box"><span id="hours">0</span><label>Saat</label></div>
+                <div class="time-box"><span id="minutes">0</span><label>Dk</label></div>
+                <div class="time-box"><span id="seconds">0</span><label>Sn</label></div>
+            </div>
+            
+            <div class="music-player" onclick="toggleMusic()">
+                <i class="fas fa-music" id="musicIcon"></i> <div id="musicText">Bizim Şarkımız</div> </div>
+        </div>
+
+        <div class="daily-quote">
+            <i class="fas fa-quote-left" style="color: var(--accent-red);"></i>
+            <span id="quoteText">Yükleniyor...</span>
+        </div>
+
+        <div class="section">
+            <h2 style="color: var(--accent-blue);">Duygu Durumu 💌</h2>
+            <div class="letters-grid">
+                <div class="letter-btn urgent" onclick="handleLetter('mutsuz')">
+                    <i class="fas fa-heart-broken"></i><br>Mutsuz Hissettiğinde
+                </div>
+                <div class="letter-btn" onclick="handleLetter('ozledim')">
+                    <i class="fas fa-video"></i><br>Beni Özlediğinde
+                </div>
+                <div class="letter-btn" onclick="handleLetter('kavga')">
+                    <i class="fas fa-hand-holding-heart"></i><br>Kavga Ettiğimizde
+                </div>
+                <div class="letter-btn" onclick="handleLetter('sikildim')">
+                    <i class="fas fa-bolt"></i><br>Sıkıldığında
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 style="color: #fff;">Aşk Haritamız 🗺️</h2>
+            <div class="timeline" id="timelineList">
+                </div>
+        </div>
+
+        <div class="section" id="wheelSection">
+            <h2>Bugün Ne Yapalım? 🎡</h2>
+            <div class="wheel-container">
+                <div class="arrow"></div>
+                <div class="wheel" id="wheel"></div>
+                <div class="spin-btn" onclick="spinWheel()">ÇEVİR</div>
+            </div>
+            <div class="wheel-result" id="wheelResult"></div>
+        </div>
+
+        <div class="section">
+            <h2 style="color: var(--accent-pink);">Bizim Hafızamız 🎮</h2>
+            <p style="font-size:0.8rem; color:#aaa;">Kartları eşleştir, sürpriz kuponu kazan!</p>
+            <div class="game-grid" id="gameGrid">
+                </div>
+        </div>
+
+    </div>
+
+    <div id="msgModal" class="modal" onclick="this.style.display='none'">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <h3 id="modalTitle" style="color:var(--accent-pink)"></h3>
+            <p id="modalBody"></p>
+            <button class="btn-grad" onclick="document.getElementById('msgModal').style.display='none'" style="margin-top:10px; width:auto;">Tamam</button>
+        </div>
+    </div>
+
+    <div id="winModal" class="modal">
+        <div class="modal-content">
+            <h2>Tebrikler Aşkım! 🎉</h2>
+            <p>Bütün anılarımızı buldun.</p>
+            <div class="coupon" id="winCoupon"></div>
+            <button class="btn-grad" onclick="document.getElementById('winModal').style.display='none'">Ödülü Al</button>
+        </div>
+    </div>
+
+    <script>
+        /* --- AYARLAR --- */
+        const START_DATE = new Date("2024-01-06T00:00:00");
+        const PASSWORD = "06.01.2024";
+        const PHONE_NUMBER = "05531021944"; // Senin numaran
+
+        /* --- VERİLER --- */
+        const quotes = [
+            "Seninle her şey çok güzel.",
+            "Gülüşün güneşim.",
+            "İyi ki varsın sevgilim.",
+            "Sadece bugün değil, her gün seninle.",
+            "Gözlerin en güzel manzaram.",
+            "Seninle yaşlanmak tek hayalim.",
+            "Kalbimdeki en güzel şeysin."
+        ];
+
+        const locations = [
+            { title: "MCBÜ İlhan Varank Kampüsü", desc: "İlk göz göze geldiğimiz, tanıştığımız o özel yer..." },
+            { title: "Çeşme & Alaçatı", desc: "Doğum günümde geçirdiğimiz mükemmel 3 gün." },
+            { title: "Pırlanta Plajı", desc: "Ateş başında marshmallow ve en güzel kampımız." },
+            { title: "Efes & Şirince", desc: "Tarih ve şarap kokulu sokaklar." },
+            { title: "Kuşadası", desc: "El ele gezdiğimiz sahiller." },
+            { title: "İzmir Foça", desc: "Huzurlu kamp günlerimiz." },
+            { title: "Muğla Turu", desc: "Akkaya, Marmaris, Fethiye, Ölüdeniz..." },
+            { title: "Antalya & Kaş", desc: "Akdeniz'in maviliğinde biz." },
+            { title: "Denizli Pamukkale", desc: "Beyaz travertenlerde anılarımız." },
+            { title: "Manisa", desc: "Sardes ve merkezde attığımız her adım." }
+        ];
+
+        const wheelOptions = [
+            "Film izleyelim 🎬", "Yürüyüşe çıkalım 🚶", "Bana kahve ısmarla ☕",
+            "Doğaçlama gezelim 🚗", "PC'de oyun oynayalım 🎮", "Kart oyunu oynayalım 🃏",
+            "Badminton oynayalım 🏸", "Yemek yapalım 🍳", "Tatlı yapalım 🍰"
+        ];
+
+        const gameImages = [
+            // Buradaki isimleri assets klasöründeki dosya adlarıyla değiştir.
+            // 10 adet fotoğraf lazım.
+            'assets/oyun1.jpg', 'assets/oyun2.jpg', 'assets/oyun3.jpg', 'assets/oyun4.jpg', 
+            'assets/oyun5.jpg', 'assets/oyun6.jpg', 'assets/oyun7.jpg', 'assets/oyun8.jpg', 
+            'assets/oyun9.jpg', 'assets/oyun10.jpg'
+        ];
+
+        const rewards = [
+            "Doğukan'dan 1 Adet Masaj Hakkı 💆‍♀️",
+            "Tartışmada Haklı Olma Hakkı (Tek Kullanımlık) 🤫",
+            "İstediğin Yemeği Ismarlama Hakkı 🍔",
+            "10 Dakika Kesintisiz Öpücük Hakkı 💋"
+        ];
+
+        /* --- FONKSİYONLAR --- */
+
+        // 1. Şifre Kontrol
+        function checkPassword() {
+            const input = document.getElementById('passInput').value.trim();
+            if(input === PASSWORD) {
+                document.getElementById('login-screen').style.transition = "opacity 1s";
+                document.getElementById('login-screen').style.opacity = "0";
+                setTimeout(() => {
+                    document.getElementById('login-screen').style.display = "none";
+                    document.getElementById('main-content').style.display = "block";
+                    initApp();
+                }, 1000);
+            } else {
+                document.getElementById('errorMsg').style.display = "block";
+            }
+        }
+
+        // 2. Uygulama Başlatıcı
+        function initApp() {
+            startTimer();
+            loadQuote();
+            loadMap();
+            initGame();
+        }
+
+        // 3. Müzik
+        function toggleMusic() {
+            const audio = document.getElementById('bgMusic');
+            const icon = document.getElementById('musicIcon');
+            const text = document.getElementById('musicText');
+            
+            if(audio.paused) {
+                audio.play();
+                icon.className = "fas fa-pause";
+                // text.innerText = "Yalın - Her Şey Sensin çalıyor..."; // Bu satır kaldırıldı, metin sabit kalsın
+            } else {
+                audio.pause();
+                icon.className = "fas fa-play";
+                // text.innerText = "Bizim Şarkımız"; // Bu satır kaldırıldı, metin sabit kalsın
+            }
+        }
+
+        // 4. Sayaç
+        function startTimer() {
+            setInterval(() => {
+                const now = new Date();
+                const diff = now - START_DATE;
+                document.getElementById('days').innerText = Math.floor(diff / (1000 * 60 * 60 * 24));
+                document.getElementById('hours').innerText = Math.floor((diff / (1000 * 60 * 60)) % 24);
+                document.getElementById('minutes').innerText = Math.floor((diff / 1000 / 60) % 60);
+                document.getElementById('seconds').innerText = Math.floor((diff / 1000) % 60);
+            }, 1000);
+        }
+
+        // 5. Rastgele Söz
+        function loadQuote() {
+            const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+            document.getElementById('quoteText').innerText = randomQuote;
+        }
+
+        // 6. Harita Yükle
+        function loadMap() {
+            const container = document.getElementById('timelineList');
+            locations.forEach(loc => {
+                container.innerHTML += `
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <h3 style="margin:0; color:var(--accent-pink); font-size:1rem;">${loc.title}</h3>
+                            <p style="margin:5px 0 0 0; font-size:0.8rem; color:#ccc;">${loc.desc}</p>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+		
+       // 7. Buton Aksiyonları (GÜNCELLENMİŞ HALİ)
+        function handleLetter(type) {
+            const modal = document.getElementById('msgModal');
+            const title = document.getElementById('modalTitle');
+            const body = document.getElementById('modalBody');
+            
+            // Pencereyi görünür yap
+            modal.style.display = 'flex';
+
+            if(type === 'mutsuz') {
+                title.innerText = "Kıyamam Sana...";
+                body.innerHTML = `Seni çok çok çoook seviyorum aşkım. Sakın üzülme, hemen beni ara konuşalım.<br><br>
+                <a href="tel:${PHONE_NUMBER}" class="btn-grad" style="text-decoration:none; display:inline-block; margin-top:10px;">📞 Hemen Ara</a>`;
+            } else if(type === 'ozledim') {
+                title.innerText = "Ben de Özledim!";
+                body.innerHTML = `Aşkım beni mi özlemiş yaaa? Hemen görüntülü ara özleşelim balım.<br><br>
+                <a href="https://wa.me/90${PHONE_NUMBER.substring(1)}" class="btn-grad" style="text-decoration:none; display:inline-block; margin-top:10px;">📹 WhatsApp Görüntülü</a>`;
+            } else if(type === 'kavga') {
+                title.innerText = "Özür Dilerim...";
+                body.innerText = "Özür dilerim aşkım, seni hiçbir zaman kırmak istemem. Sakinleşince benimle iletişime geç, sakin sakin konuşalım. Seni seviyorum.";
+            } else if(type === 'sikildim') {
+                // Sıkıldığında kısmı artık Alert vermeyecek, bu pencereyi açacak
+                title.innerText = "Sıkıldın mı?";
+                body.innerHTML = `Ben zımba gibiyim! Hadi çarkı çevir bakalım şansımıza ne çıkacak?<br><br>
+                <button class="btn-grad" onclick="closeModalAndScroll()" style="margin-top:10px;">🎡 Hadi Çevirelim</button>`;
+            }
+        }
+
+        // Bu küçük yardımcı fonksiyonu da handleLetter'ın hemen altına ekle
+        function closeModalAndScroll() {
+            document.getElementById('msgModal').style.display = 'none'; // Pencereyi kapat
+            document.getElementById('wheelSection').scrollIntoView({behavior: 'smooth'}); // Çarka kaydır
+        }
+
+       // 8. Çarkıfelek (KONFETİLİ VERSİYON)
+        function spinWheel() {
+            const wheel = document.getElementById('wheel');
+            const resultDiv = document.getElementById('wheelResult');
+            resultDiv.innerText = ""; // Önceki sonucu temizle
+            
+            // Rastgele dönüş açısı (En az 5 tur atsın diye 1800 ekledik)
+            const randomDegree = Math.floor(Math.random() * 3600) + 1800; 
+            wheel.style.transition = "transform 4s cubic-bezier(0.17, 0.67, 0.83, 0.67)";
+            wheel.style.transform = `rotate(${randomDegree}deg)`;
+            
+            // 4 saniye sonra (dönüş bitince) çalışacak kısım
+            setTimeout(() => {
+                // Hangi dilimin geldiğini hesapla (Görsel amaçlı rastgele seçiyoruz)
+                const selected = wheelOptions[Math.floor(Math.random() * wheelOptions.length)];
+                resultDiv.innerText = "Sonuç: " + selected;
+                
+                // --- KONFETİ PATLATMA KISMI ---
+                // Sizin renkleriniz: Kırmızı, Mavi, Beyaz
+                const colors = ['#722F37', '#1034A6', '#ffffff'];
+
+                // 1. Patlama (Ortadan)
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 },
+                    colors: colors
+                });
+
+                // 2. Patlama (Biraz gecikmeli, sağdan ve soldan)
+                setTimeout(() => {
+                    confetti({
+                        particleCount: 50,
+                        angle: 60,
+                        spread: 55,
+                        origin: { x: 0 },
+                        colors: colors
+                    });
+                    confetti({
+                        particleCount: 50,
+                        angle: 120,
+                        spread: 55,
+                        origin: { x: 1 },
+                        colors: colors
+                    });
+                }, 250);
+
+            }, 4000); // Dönüş süresiyle aynı olmalı
+        }
+
+        // 9. Hafıza Oyunu
+        function initGame() {
+            const grid = document.getElementById('gameGrid');
+            let deck = [...gameImages, ...gameImages];
+            deck.sort(() => 0.5 - Math.random());
+            
+            let html = "";
+            deck.forEach((img, index) => {
+                html += `
+                    <div class="card" onclick="flipCard(this)" data-img="${img}">
+                        <div class="card-front"><i class="fas fa-heart"></i></div>
+                        <div class="card-back"><img src="${img}"></div>
+                    </div>
+                `;
+            });
+            grid.innerHTML = html;
+        }
+
+        let hasFlipped = false;
+        let lockBoard = false;
+        let firstCard, secondCard;
+        let matchCount = 0;
+
+        function flipCard(card) {
+            if (lockBoard) return;
+            if (card === firstCard) return;
+
+            card.classList.add('flipped');
+
+            if (!hasFlipped) {
+                hasFlipped = true;
+                firstCard = card;
+                return;
+            }
+
+            secondCard = card;
+            checkForMatch();
+        }
+
+        function checkForMatch() {
+            let isMatch = firstCard.dataset.img === secondCard.dataset.img;
+            isMatch ? disableCards() : unflipCards();
+        }
+
+        function disableCards() {
+            firstCard.onclick = null;
+            secondCard.onclick = null;
+            matchCount++;
+            resetBoard();
+            
+            if(matchCount === gameImages.length) {
+                setTimeout(() => {
+                    const randomReward = rewards[Math.floor(Math.random() * rewards.length)];
+                    document.getElementById('winCoupon').innerText = randomReward;
+                    document.getElementById('winModal').style.display = 'flex';
+                }, 500);
+            }
+        }
+
+        function unflipCards() {
+            lockBoard = true;
+            setTimeout(() => {
+                firstCard.classList.remove('flipped');
+                secondCard.classList.remove('flipped');
+                resetBoard();
+            }, 1000);
+        }
+
+        function resetBoard() {
+            [hasFlipped, lockBoard] = [false, false];
+            [firstCard, secondCard] = [null, null];
+        }
+    </script>
+</body>
+</html>
